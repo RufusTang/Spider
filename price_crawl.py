@@ -5,6 +5,12 @@ import urllib2
 import re
 from bs4 import BeautifulSoup
 
+
+import sys
+reload(sys)
+sys.setdefaultencoding( "utf-8" )
+
+
 pattern = re.compile('\'(.*)\'')
 def beautiful_soup_scraper(html):
     soup = BeautifulSoup(html, 'html.parser')
@@ -14,19 +20,18 @@ def beautiful_soup_scraper(html):
             stock_info['name'] = pattern.findall(result.text.replace(' ','').split('\n')[2])[0]
             stock_info['code'] = pattern.findall(result.text.replace(' ', '').split('\n')[3])[0]
             stock_info['price'] = pattern.findall(result.text.replace(' ','').split('\n')[4])[0]
-            print stock_info
-            print stock_info['name']
-            return stock_info
-    return "Not Found"
 
-"""    for field in FIELDS:
-        results[field] = soup.find('table').find('tr', id='places_{}__row'.format(field)).find('td', class_='w2p_fw').text
-    return results
-"""
+            csvfile = file('csvtest.csv', 'wb')
+            writer = csv.writer(csvfile)
+            writer.writerow([result['name'], result['code'], result['price']])
+
+            return "OK"
+    return "Not Found"
 
 def main():
     html = urllib2.urlopen('http://quotes.money.163.com/0600019.html').read()
     result = beautiful_soup_scraper(html)
+
 
 if __name__ == '__main__':
     main()
