@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 import csv
 import sys
 reload(sys)
-sys.setdefaultencoding( "utf-8" )
+sys.setdefaultencoding("utf-8")
 
 import  xdrlib
 import xlrd
@@ -42,12 +42,23 @@ def beautiful_soup_scraper(html):
 
 def main():
     UrlLinks =excel_table_byindex('UrlLinks.xlsx')
-    print UrlLinks
-    html = urllib2.urlopen('http://quotes.money.163.com/0600019.html').read()
-    result = beautiful_soup_scraper(html)
+    Stock_Crawl_Results=[]
+    for i in range(len(UrlLinks)):
+        print UrlLinks[i][1]
+        html = urllib2.urlopen(UrlLinks[i][1]).read()
+        result = beautiful_soup_scraper(html)
+        Stock_Crawl_Results.append(result)
+
+    print Stock_Crawl_Results
+
+
+    Csv_Data = []
+    for i in range(len(Stock_Crawl_Results)):
+        Csv_Data.append([Stock_Crawl_Results[i]['name'],Stock_Crawl_Results[i]['code'],Stock_Crawl_Results[i]['price']])
+
     csvfile = file('csvtest.csv', 'wb')
     writer = csv.writer(csvfile)
-    writer.writerow([result['name'], result['code'], result['price']])
+    writer.writerows(Csv_Data)
 
 if __name__ == '__main__':
     main()
